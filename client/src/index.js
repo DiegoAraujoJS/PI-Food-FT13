@@ -7,10 +7,14 @@ import {BrowserRouter, Route} from 'react-router-dom'
 import Form from './components/Form.jsx';
 import Home from './components/Home.jsx';
 import {Provider} from 'react-redux'
-import {createStore} from 'redux'
+import {createStore, applyMiddleware, compose} from 'redux'
 import reducer from './reducer'
+import thunkMiddleware from 'redux-thunk'
 
-const store = createStore(reducer)
+const store = createStore(reducer,
+  compose(
+   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+   applyMiddleware(thunkMiddleware)))
 
 
 ReactDOM.render(
