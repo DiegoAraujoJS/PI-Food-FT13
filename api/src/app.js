@@ -3,7 +3,9 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const routes = require('./routes/index.js');
-const axios = require('axios')
+const axios = require('axios');
+const fs = require('fs')
+const { response } = require('express');
 require('./db.js');
 
 const server = express();
@@ -33,10 +35,16 @@ server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   res.status(status).send(message);
 });
 
-server.get('/dishes', (req, res) => {
-  axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=ed8a239fc1e74b1fbf39d24f3e82bcf6&query=pasta&maxFat=25&number=2`)
-  .then (response => res.send(response))
-  .catch(err => console.log(err))
+server.get('/dishes', async (req, res) => {
+  try {
+    const dishes = await axios.get('https://api.spoonacular.com/recipes/complexSearch?apiKey=ed8a239fc1e74b1fbf39d24f3e82bcf6&number=10')
+    var writable = fs.createWriteStream(__dirname+'/recipes.txt')
+    
+    res.send(dishes)
+  } catch (err) {
+    console.log(err)
+  }
+  
 
 })
 
