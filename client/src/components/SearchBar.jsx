@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import {connect} from 'react-redux'
 
 
-export default function SearchBar (props) {
+function SearchBar (props) {
     const [searchInput, inputHandler] = React.useState('')
     return (
         <div className="search-bar">
@@ -11,3 +12,13 @@ export default function SearchBar (props) {
         </div>
     );
 }
+
+function mapStateToProps(state) {
+    searchInput: state.searchInput
+}
+
+function mapDispatchToProps(dispatch) {
+    dispatchSearch: (searchInput) => dispatch(searchInput)
+} 
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchBar)
