@@ -13,6 +13,12 @@ export default function (state={
                 ...state,
                 orderRanking: !state['orderRanking']
             }
+        case ('SEARCH_INPUT'):
+            return {
+                ...state,
+                searchInput: action['payload']['input']
+
+            }
         default:
             return state
     }

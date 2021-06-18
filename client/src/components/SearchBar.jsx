@@ -7,18 +7,29 @@ function SearchBar (props) {
     return (
         <div className="search-bar">
             <input className="search-bar__input" onChange={(e) => {inputHandler(e.target.value);console.log(searchInput)}} ></input>
-            <button className="search-bar__search-button" >Buscar receta</button>
+            <button className="search-bar__search-button" onClick={() => props.dispatchSearch(searchInput)}>Buscar receta</button>
             
         </div>
     );
 }
 
 function mapStateToProps(state) {
-    searchInput: state.searchInput
+    return {
+        searchInput: state.searchInput
+    }
+    
 }
 
 function mapDispatchToProps(dispatch) {
-    dispatchSearch: (searchInput) => dispatch(searchInput)
+    return {
+
+        dispatchSearch: (searchInput) => dispatch({
+            type: 'SEARCH_INPUT',
+            payload: {
+                input: searchInput
+            }
+        })
+    }
 } 
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBar)
