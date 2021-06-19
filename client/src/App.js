@@ -5,6 +5,8 @@ import Dishes from './components/Dishes.jsx'
 
 
 export default function App (props) {
+    
+
     return (
         <div className="app">
             <div className="header">

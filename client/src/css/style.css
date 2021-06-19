@@ -11,11 +11,14 @@
 }
 
 .dishes{
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
     height: 100%;
-    width: 100%;
+    width: 50%;
     
+}
+.detail{
+    display: inline;
 }
 .dishesAPP{
     height: 600px;
@@ -68,4 +71,19 @@
     justify-content: space-between;
     
     
+}
+.dish__detail{
+    background:none;
+    border:none; 
+}
+
+.dish-detail__div {
+    display:inline-flex;
+    flex-direction: column;
+    background-color: coral;
+    padding: 10px;
+    margin: 15px;
+    min-width: 200px;
+    width: 30%;
+    height: 40%;
 }

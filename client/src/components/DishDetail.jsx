@@ -3,9 +3,9 @@ import Dish from './Dish.jsx'
 
 export default function (props) {
     
-    const childLiSummary = <li className='dish-detail__item'>Resumen: La de la nona</li>
-    const childLiRanking = <li className='dish-detail__item'>Ranking: 3</li>
-    const childLiHealth = <li className='dish-detail__item'>Nivel de comida saludable: Rancio</li>
+    const childLiSummary = <li className='dish-detail__item'>Summary: {props['summary']}</li>
+    const childLiRanking = <li className='dish-detail__item'>Ranking: {props['ranking']}</li>
+    const childLiHealth = <li className='dish-detail__item'>Health: {props['health']} </li>
     const childLiPasoAPaso = <ul className='dish-detail__item__recipe'></ul>
     const children = [
         childLiSummary,
@@ -17,8 +17,13 @@ export default function (props) {
         {children}
     </ul>
     
-    const dish = <Dish children={childUl} name={props['name']} url={props['url']} diet={props['diet']}></Dish>
     return (
-        dish
+        <div className="dish-detail__div">
+            <h1>
+                {props['title']}
+            </h1>
+            {childUl}
+
+        </div>
     )
 }
