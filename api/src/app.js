@@ -18,7 +18,6 @@ server.use(bodyParser.urlencoded({
   limit: '50mb'
 }));
 server.use(express.json())
-server.use(express.json())
 server.use(cookieParser());
 server.use(morgan('dev'));
 server.use((req, res, next) => {
