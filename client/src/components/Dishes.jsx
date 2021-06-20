@@ -4,12 +4,11 @@ import {range, sortBy} from 'underscore'
 import axios from 'axios'
 import {connect} from 'react-redux'
 import DishDetail from './DishDetail.jsx'
-const Promise = require('bluebird')
 
 function myReduce (array) {
     if (array.length !== 0) {
         console.log(array)
-        return array.reduce((acum, dietName) => acum+dietName)
+        return array.reduce((acum, dietName) => acum+', '+dietName)
     } else {
         return ''
     }
@@ -21,14 +20,15 @@ function Dishes (props) {
     const orderByRanking = true;
 
     let [dishes, setDishes] = React.useState([])
+    const [detail, setDetail] = React.useState('')
+
     const [pageNumber, setPageNumber] = React.useState(0)
 
     const dishesPerPage = 6
-    const pagesVisited = pageNumber * dishesPerPage
 
     function displayDishes(){
-        dishes.slice(pagesVisited, dishesPerPage)
-        .map(dish => <Dish name={dish['title']} url={dish['image']} diet={'vegan'} ranking={dish['aggregateLikes']} detailFunction={() => {console.log(dish['id']);setDetail(dishes.find(dish => dish['id']===dish['id']))}} />)
+        return dishes.slice(pageNumber * dishesPerPage, dishesPerPage + pageNumber*dishesPerPage)
+        .map(dish => <Dish name={dish['title']} url={dish['image']} diet={'diet: ' + myReduce(dish['diets'])} ranking={dish['aggregateLikes']} detailFunction={() => {console.log(dish['id']);setDetail(dishes.find(to_find_dish => dish['id']===to_find_dish['id']))}} />)
     }
 
     
@@ -39,7 +39,7 @@ function Dishes (props) {
     //     console.log(response)
     //     return response
     // })()
-    const [detail, setDetail] = React.useState('')
+    
     
     React.useEffect(() => {
         const list =  axios.get('http://localhost:3001/dishes?addRecipeInformation=true')
@@ -61,12 +61,11 @@ function Dishes (props) {
     console.log(dishes)
     props.orderAZ ? dishes = sortBy(dishes, (dish) => dish['title']) : dishes = dishes;
     props.orderRanking ? dishes = sortBy(dishes, (dish) => dish['aggregateLikes']).reverse() : dishes = dishes; 
-    const diets = ['Gluten Free', 'Ketogenic', 'Vegetarian', 'Lacto-Vegetarian', 'Ovo-Vegetarian', 'Vegan', 'Pescetarian', 'Paleo', 'Primal', 'Whole']
+    const diets = ["gluten free", "dairy free", "lacto ovo vegetarian", "vegan", "paleolithic", "primal", "pescatarian", "fodmap friendly", "whole 30"]
     //arreglar los nombres. fijarse en como aparecen escritas las dietas de dish['diets']
     diets.forEach(diet => {
         if (props[diet]) {
             dishes = dishes.filter(dish => dish['diets'].includes(diet.toLowerCase()))
-            console.log('adsfasdf')
         }
     })
     
@@ -75,22 +74,21 @@ function Dishes (props) {
 
     return (
         <div>
-            
+            <button onClick={() => pageNumber < (dishes.length / dishesPerPage) - 1 && setPageNumber(pageNumber+1)}>Forward</button>
+            <button onClick={() => pageNumber > 0 && setPageNumber(pageNumber-1)}>Previous</button>
             <div className="dishes">
-
-                {dishes.map(obj_dish => <Dish name={obj_dish['title']} url={obj_dish['image']} diet={'vegan'} ranking={obj_dish['aggregateLikes']} detailFunction={() => {console.log(obj_dish['id']);setDetail(dishes.find(dish => dish['id']===obj_dish['id']))}} />)}
+                {displayDishes()}
             </div>
 
             <div className="detail">
                 {detail !== '' && <DishDetail title={detail['title']} ranking={detail['aggregateLikes']} health={detail['healthScore']} summary={detail['summary']}/>}
             </div>
-
             
         </div>
     )
 }
 function mapStateToProps(state) {
-    const diets = ['Gluten Free', 'Ketogenic', 'Vegetarian', 'Lacto-Vegetarian', 'Ovo-Vegetarian', 'Vegan', 'Pescetarian', 'Paleo', 'Primal', 'Whole']
+    const diets = ["gluten free", "dairy free", "lacto ovo vegetarian", "vegan", "paleolithic", "primal", "pescatarian", "fodmap friendly", "whole 30"]
     let objDiets = {}
     diets.forEach(diet => objDiets[diet] = state[diet])
     return {

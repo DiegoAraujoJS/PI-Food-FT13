@@ -7,7 +7,7 @@ export default function (state = {
         ORDER_AZ: {...state, orderAZ: !state['orderAZ']},
         ORDER_BY_RANKING: {...state, orderRanking:!state['orderRanking']}
     }
-    const diets = ['Gluten Free', 'Ketogenic', 'Vegetarian', 'Lacto-Vegetarian', 'Ovo-Vegetarian', 'Vegan', 'Pescetarian', 'Paleo', 'Primal', 'Whole']
+    const diets = ["gluten free", "dairy free", "lacto ovo vegetarian", "vegan", "paleolithic", "primal", "pescatarian", "fodmap friendly", "whole 30"]
     diets.forEach(diet => {
         cases[diet] = {...state}
         cases[diet][diet] = !state[diet]

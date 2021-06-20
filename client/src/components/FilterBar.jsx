@@ -2,7 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 
 function FilterBar (props) {
-    const diets = ['Gluten Free', 'Ketogenic', 'Vegetarian', 'Lacto-Vegetarian', 'Ovo-Vegetarian', 'Vegan', 'Pescetarian', 'Paleo', 'Primal', 'Whole']
+    const diets = ["gluten free", "dairy free", "lacto ovo vegetarian", "vegan", "paleolithic", "primal", "pescatarian", "fodmap friendly", "whole 30"]
     return (
         <div className="filter-bar">
             <input className="filter-bar__input" type="checkbox" onChange={() => {props.dispatchOrderAZ()}}></input>
@@ -24,7 +24,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps (dispatch) {
     let dispatchDiets = {}
-    const diets = ['Gluten Free', 'Ketogenic', 'Vegetarian', 'Lacto-Vegetarian', 'Ovo-Vegetarian', 'Vegan', 'Pescetarian', 'Paleo', 'Primal', 'Whole']
+    const diets = ["gluten free", "dairy free", "lacto ovo vegetarian", "vegan", "paleolithic", "primal", "pescatarian", "fodmap friendly", "whole 30"]
     diets.forEach(diet => dispatchDiets[`dispatch${diet}`] = () => dispatch({type: diet}))
 
     return {
