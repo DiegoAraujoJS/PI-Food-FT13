@@ -17,6 +17,7 @@ function myReduce (array) {
 
 function Dishes (props) {
     const orderAZ = false;
+    console.log('dishes?')
     const orderByRanking = true;
 
     let [dishes, setDishes] = React.useState([])
@@ -65,7 +66,7 @@ function Dishes (props) {
     //arreglar los nombres. fijarse en como aparecen escritas las dietas de dish['diets']
     diets.forEach(diet => {
         if (props[diet]) {
-            dishes = dishes.filter(dish => dish['diets'].includes(diet.toLowerCase()))
+            dishes = dishes.filter(dish => dish.diets.includes(diet))
         }
     })
     

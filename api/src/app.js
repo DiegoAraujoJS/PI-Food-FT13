@@ -7,7 +7,7 @@ const axios = require('axios');
 const fs = require('fs')
 const Promise = require('bluebird')
 
-require('./db.js');
+const { Recipe, DietType } = require('./db.js');
 
 const server = express();
 
@@ -48,10 +48,10 @@ server.get('/dishes', (req, res) => {
     recipesInfo = '&addRecipeInformation=true'
   }
   if (recipeCache.length === 0) { 
-    axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.API_KEY}&number=20${recipesInfo}`)
+    axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.API_KEY}&number=1000${recipesInfo}`)
     .then(response => {
-      recipeCache.push(response['data'])
-      res.send(response['data'])
+      recipeCache.push(response.data)
+      res.send(response.data)
     })
     .catch(error => {
       console.log(process.env);
@@ -62,25 +62,34 @@ server.get('/dishes', (req, res) => {
   }
 
   // axios.get('')
-  // .then(response => res.send(response['data']['results']))
+  // .then(response => res.send(response.data['results']))
   // .catch(error => console.log(error))
 })
 let informationCache = []
 server.get ('/dishes/:id', (req, res) => {
-  if (! informationCache.some(dish => dish['id'] == req.params.id)) {
+  if (! informationCache.some(dish => dish.id == req.params.id)) {
 
     axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/information?apiKey=${process.env.API_KEY}`)
     .then(response => {
       console.log('request')
-      informationCache.push(response['data'])
-      res.send(response['data'])
+      informationCache.push(response.data)
+      res.send(response.data)
       
     })
     .catch(error => {console.log(error); res.status(400).send(error)})
   } else {
     console.log('cache')
-    res.send(informationCache.find(dish => dish['id'] == req.params.id))
+    res.send(informationCache.find(dish => dish.id == req.params.id))
   }
+})
+server.get('/diets', async (req,res) => {
+  const diets = await DietType.findAll({attributes: ['id', 'name']});
+  res.send(diets)
+})
+
+server.post('/recipe', (req,res) => {
+  Recipe.create(req.body)
+  res.send({})
 })
 
 
