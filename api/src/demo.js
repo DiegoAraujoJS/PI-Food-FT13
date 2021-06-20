@@ -1,15 +1,8 @@
 const fs = require('fs')
+const Promise = require('bluebird')
 
-const obj = {
-    a:1,
-    b:2,
-    c:3
-}
+const promise = new Promise (function(resolve, reject){
+    resolve (1)
+}).then(value => console.log(value))
 
-// var readable = fs.createReadStream(JSON.stringify(obj), {
-//     encoding: 'utf8',
-//     highWaterMark: 1 * 1024
-// })
-var writable = fs.createWriteStream(__dirname+'/recipes.txt')
-
-writable.write(JSON.stringify(obj))
+console.log(promise)

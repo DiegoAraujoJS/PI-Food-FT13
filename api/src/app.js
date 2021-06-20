@@ -5,14 +5,18 @@ const morgan = require('morgan');
 const routes = require('./routes/index.js');
 const axios = require('axios');
 const fs = require('fs')
-const { response } = require('express');
+const Promise = require('bluebird')
+
 require('./db.js');
 
 const server = express();
 
 server.name = 'API';
 
-server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+server.use(bodyParser.urlencoded({
+  extended: true,
+  limit: '50mb'
+}));
 server.use(express.json())
 server.use(express.json())
 server.use(cookieParser());
@@ -35,17 +39,49 @@ server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   res.status(status).send(message);
 });
 
-server.get('/dishes', async (req, res) => {
-  try {
-    const dishes = await axios.get('https://api.spoonacular.com/recipes/complexSearch?apiKey=ed8a239fc1e74b1fbf39d24f3e82bcf6&number=10')
-    var writable = fs.createWriteStream(__dirname+'/recipes.txt')
-    
-    res.send(dishes)
-  } catch (err) {
-    console.log(err)
-  }
-  
+let recipeCache = []
 
+server.get('/dishes', (req, res) => {
+  
+  let recipesInfo = '';
+  let recipeInfo = '';
+  if (req.query.addRecipeInformation === 'true') {
+    recipesInfo = '&addRecipeInformation=true'
+  }
+  if (recipeCache.length === 0) { 
+    axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.API_KEY}&number=20${recipesInfo}`)
+    .then(response => {
+      recipeCache.push(response['data'])
+      res.send(response['data'])
+    })
+    .catch(error => {
+      console.log(process.env);
+      res.status(400).send(error)
+    })
+  } else {
+    res.send(recipeCache[0])
+  }
+
+  // axios.get('')
+  // .then(response => res.send(response['data']['results']))
+  // .catch(error => console.log(error))
+})
+let informationCache = []
+server.get ('/dishes/:id', (req, res) => {
+  if (! informationCache.some(dish => dish['id'] == req.params.id)) {
+
+    axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/information?apiKey=${process.env.API_KEY}`)
+    .then(response => {
+      console.log('request')
+      informationCache.push(response['data'])
+      res.send(response['data'])
+      
+    })
+    .catch(error => {console.log(error); res.status(400).send(error)})
+  } else {
+    console.log('cache')
+    res.send(informationCache.find(dish => dish['id'] == req.params.id))
+  }
 })
 
 
