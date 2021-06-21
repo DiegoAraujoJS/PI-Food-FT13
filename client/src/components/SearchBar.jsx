@@ -3,10 +3,10 @@ import {connect} from 'react-redux'
 import axios from 'axios'
 
 function SearchBar (props) {
-    const [searchInput, inputHandler] = React.useState('')
+    const [searchInput, setInput] = React.useState('')
     return (
         <div className="search-bar">
-            <input className="search-bar__input" onChange={(e) => {inputHandler(e.target.value);console.log(searchInput)}} ></input>
+            <input className="search-bar__input" onChange={(e) => {setInput(e.target.value);console.log(searchInput)}} ></input>
             <button className="search-bar__search-button" onClick={() => props.dispatchSearch(searchInput)}>Buscar receta</button>
             
         </div>

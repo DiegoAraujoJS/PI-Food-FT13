@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Link} from 'react-router-dom'
 import App from '../App.js'
 import axios from "axios";
-
+import {diets} from '../utils'
 export default function () {
 
     const [name, setName] = useState();
@@ -11,12 +11,26 @@ export default function () {
     const [healthScore, setHealthScore] = useState();
     const [step, setStep] = useState("");
     const [steps, setSteps] = useState([]);
+    const [button, setStateButton] = useState([])
+    const [dietids, setDietId] = useState({})
+
+    let buttons = diets.map(diet => {const thisbtn = <button id={"form__button"+diet} style={{'background-color': 'beige'}} onClick={() => {
+        let thisBtn = document.getElementById ("form__button"+diet)
+        if (thisBtn.style['background-color'] === 'green') {
+            thisBtn.style['background-color'] = 'beige'
+        } else {
+            thisBtn.style['background-color'] = 'green'
+        }
+        
+        dietids[diet] = !dietids[diet]
+        }}>{diet}</button>; return thisbtn} )
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(name, extract, score, healthScore, steps)
+        let dietidsPayload = Object.keys(dietids).filter(x => dietids[x]===true).map(key => diets.indexOf(key))
+        console.log(name, extract, score, healthScore, steps, dietidsPayload )
         const response = await axios.post('http://localhost:3001/recipe', {
-            name, extract, score, healthScore, steps
+            values: {name, extract, score, healthScore, steps, image: "https://spoonacular.com/recipeImages/715594-312x231.jpg"}, dietidsPayload
         })
         console.log(response)
     }
@@ -25,7 +39,7 @@ export default function () {
             handleSubmit(e)
         }}>
             <div className='header'>
-                <h1>Creá tu recetaza!</h1>
+                <h1>Create your recipe!</h1>
             </div>
 
             <div className='container'>
@@ -47,6 +61,12 @@ export default function () {
                     <span>Nivel de comida saludable:</span>
                     <input type="number" name="healthScore" onChange={e => setHealthScore(e.target.value)}></input>
 
+                </div>
+                <div>
+                    <span>Diet</span>
+                    {buttons}
+                    
+                    
                 </div>
                 <div>
                     <span>Paso a paso:</span>
