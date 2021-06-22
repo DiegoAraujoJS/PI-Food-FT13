@@ -48,7 +48,7 @@ let apiRequests = 0;
 
 server.get('/recipes', async (req, res) => {
 
-    const howManyRecipesRequest = req.query.howManyRecipesRequest || 5;
+    const howManyRecipesRequest = req.query.howManyRecipesRequest || 50;
     const recipesInfo = req.query.addRecipeInformation === 'true' ? '&addRecipeInformation=true' : '';
 
     let cachedResponse = await getSpoonacularRecipes(howManyRecipesRequest, recipesInfo, res)
@@ -97,7 +97,7 @@ server.post('/recipes', async (req, res) => {
 
     //calcular next id
     const recipesDB = await Recipe.findAll()
-    const recipesAPI = await getSpoonacularRecipes(5, '', res)
+    const recipesAPI = await getSpoonacularRecipes(100, '', res)
 
     // console.log('DB ',recipesDB, 'API ',recipesAPI)
     // console.log(recipesDB, recipesAPI)
@@ -108,6 +108,10 @@ server.post('/recipes', async (req, res) => {
     // //en la DB. El id que le pasamos es el máximo + 1 de todos los ids que tengamos hasta ahora,
     // //de esta manera si la DB empieza vacía y traemos todo lo que necesitamos de la API al 
     //principionos aseguramos de que cada recipe tenga un id único
+    const theSameRecipe = await Recipe.findAll({where:{name:req.body.values.name}})
+    console.log(theSameRecipe)
+    
+
     console.log('creando recipe', nextId)
     let recipe = await Recipe.create({
         ...req.body.values, id: nextId
@@ -117,7 +121,7 @@ server.post('/recipes', async (req, res) => {
 
     console.log('payload de ids de dietas', req.body.dietidsPayload)
     for (let i of req.body.dietidsPayload) {
-        let diet = await DietType.findByPk(i)
+        let diet = await DietType.findByPk(i+1)
         // console.log(diet)
         await recipe.addDietType(diet)
     }

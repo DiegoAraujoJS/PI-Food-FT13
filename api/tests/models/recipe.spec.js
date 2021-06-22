@@ -2,7 +2,7 @@ const { Recipe, conn } = require('../../src/db.js');
 const { expect } = require('chai');
 
 describe('Recipe model', () => {
-  before(() => conn.authenticate()
+  before(() => conn.authenticate({p})
     .catch((err) => {
       console.error('Unable to connect to the database:', err);
     }));
@@ -20,3 +20,5 @@ describe('Recipe model', () => {
     });
   });
 });
+
+

@@ -7,7 +7,7 @@ const objectifyRecipe = async function (recipes) {
 
     let dietsXrecipe = await RecipeDiet.findAll() //array de ids de recipes
     //encuentra TODAS las relaciones
-    console.log(dietsXrecipe)
+    
 
     // dietsXrecipe = dietsXrecipe.map(row => {
     //     return {
@@ -25,19 +25,20 @@ const objectifyRecipe = async function (recipes) {
             }}
         })
         const theseDietsNames = theseDiets.map(d => d.name)
-        
+        console.log(theseDietsNames)
+        const thisSteps = r.steps.map((s,i) => {return {number:i, step:s}})
         recipesNew.push({
             title: r.name,
             id: r.id,
             healthScore: r.healthScore,
             summary: r.extract,
-            score: r.score,
-            steps: r.steps,
+            aggregateLikes: r.score,
+            analyzedInstructions: [{steps:thisSteps}],
             image: r.image,
             diets: theseDietsNames
          })
     }
-    console.log('recipes new' ,recipesNew)
+    
     
     // console.log(dietsDB)
     return recipesNew
