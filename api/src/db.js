@@ -27,11 +27,13 @@ sequelize.models = Object.fromEntries(capsEntries);
 
 // En sequelize.models están todos los modelos importados como propiedades
 // Para relacionarlos hacemos un destructuring
-const {Recipe, DietType} = sequelize.models;
+const {Recipe, DietType, recipexdiet} = sequelize.models;
 
 // Aca vendrian las relaciones
-Recipe.belongsTo(DietType);
-DietType.hasMany(Recipe);
+// Recipe.belongsTo(DietType);
+// DietType.hasMany(Recipe);
+
+
 
 const bootstrap = async () => {
     ["gluten free", "dairy free", "lacto ovo vegetarian", "vegan", "paleolithic", "primal", "pescatarian", "fodmap friendly", "whole 30"]
@@ -39,6 +41,19 @@ const bootstrap = async () => {
             DietType.create({name: type})
         })
 }
+
+// Recipe.belongsTo(DietType)
+// DietType.hasMany(Recipe)
+
+RecipeDiet = sequelize.define('recipexdiet', {
+  role: Sequelize.STRING
+})
+
+Recipe.belongsToMany(DietType, {through: RecipeDiet})
+DietType.belongsToMany(Recipe,{through: RecipeDiet})
+
+
+
 
 module.exports = {
     ...sequelize.models,
