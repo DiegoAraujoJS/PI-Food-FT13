@@ -3,6 +3,10 @@ import {Link} from 'react-router-dom'
 
 export default function () {
     return (
-        <Link to='/app'>A la app</Link>
+        <div className="home">
+            
+           <h1 className="to-the"> <Link to='/app'>To the App</Link></h1>
+           <h1 className="header-home">PI Food</h1>
+        </div>
     )
 }
