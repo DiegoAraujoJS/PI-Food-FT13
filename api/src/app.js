@@ -8,7 +8,7 @@ const {Op} = require('sequelize')
 const storage = require('node-persist');
 const {Recipe, DietType} = require('./db.js');
 const db = require('./db.js');
-const {getSpoonacularRecipes} = require('./spoonacular.js')
+const getSpoonacularRecipes = require('./spoonacular.js')
 
 // init cache
 storage.init();

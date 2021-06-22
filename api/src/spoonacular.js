@@ -17,4 +17,4 @@ const getSpoonacularRecipes = async (howManyRecipesRequest, recipesInfo) => {
     }
     return cachedResponse;
 };
-module.exports.getSpoonacularRecipes = getSpoonacularRecipes;
+module.exports = getSpoonacularRecipes;
