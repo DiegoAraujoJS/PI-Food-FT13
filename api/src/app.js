@@ -4,12 +4,13 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const routes = require('./routes/index.js');
 const axios = require('axios');
+
 const {Op} = require('sequelize')
 const storage = require('node-persist');
-const {Recipe, DietType} = require('./db.js');
+const {Recipe, DietType, RecipeDiet} = require('./db.js');
 const db = require('./db.js');
 const getSpoonacularRecipes = require('./spoonacular.js')
-
+const objectifyRecipe = require('./objectifyRecipe.js');
 // init cache
 storage.init();
 
@@ -43,35 +44,48 @@ server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 
 let apiRequests = 0;
 
+
+
 server.get('/recipes', async (req, res) => {
 
     const howManyRecipesRequest = req.query.howManyRecipesRequest || 5;
     const recipesInfo = req.query.addRecipeInformation === 'true' ? '&addRecipeInformation=true' : '';
 
-    let cachedResponse = await getSpoonacularRecipes(howManyRecipesRequest, recipesInfo)
+    let cachedResponse = await getSpoonacularRecipes(howManyRecipesRequest, recipesInfo, res)
 
     const dbRecipes = await Recipe.findAll()
-    return res.send({results: [...cachedResponse, ...dbRecipes]})
+    
+    let dbRecipesWithDiets = []
+
+    dbRecipesWithDiets = await objectifyRecipe(dbRecipes)
+    
+    let response = [...cachedResponse, ...dbRecipesWithDiets]
+
+    if (req.query.name) response = response.filter(recipe => recipe.title.includes(req.query.name))
+
+    return res.send({results: response})
 })
 
-server.get('/recipes/:id', (req, res) => {
-    if (!cache.get('recipesID').some(dish => dish.id == req.params.id)) {
+server.get('/recipes/:id', async (req, res) => {
+    const cacheKey = `id:${req.params.id}`
+    let cachedResponse = await storage.getItem(cacheKey)
+    if (!cachedResponse) {
+      
+      try {
 
-        axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/information?apiKey=${process.env.API_KEY}`)
-            .then(response => {
-                console.log('request')
-                res.send(response.data)
-                cache.set('recipesID', [...cache.get('recipesID'), response.data], 14400)
+        // console.log(req.params.id, process.env.API_KEY, typeof req.params.id, typeof process.env.API_KEY)
 
-            })
-            .catch(error => {
-                console.log(error);
-                res.status(400).send(error)
-            })
-    } else {
-        console.log('cache')
-        res.send(cache.get('recipesID').find(dish => dish.id == req.params.id))
+        const response = await axios.get(`https://api.spoonacular.com/recipes/${req.params.id}/information?apiKey=${process.env.API_KEY}`)
+        console.log('fetched')
+        cachedResponse = response.data
+        await storage.setItem(cacheKey, cachedResponse, {ttl: 1000 * 60 * 60})
+        
+
+      } catch (error) {
+        return res.status(400).send(error)
+      }
     }
+    return res.status(200).send(cachedResponse)
 })
 
 server.get('/diets', async (req, res) => {
@@ -79,21 +93,37 @@ server.get('/diets', async (req, res) => {
     res.send(diets)
 })
 
-server.post('/recipe', async (req, res) => {
+server.post('/recipes', async (req, res) => {
 
     //calcular next id
-    const dbIds = await Recipe.findAll().map(r => r.id)
-    const apiIds = await getSpoonacularRecipes(1000).map(r => r.id);
-    const nextId = [...dbIds, ...apiIds].sort((a, b) => a - b).pop() + 1;
+    const recipesDB = await Recipe.findAll()
+    const recipesAPI = await getSpoonacularRecipes(5, '', res)
 
+    // console.log('DB ',recipesDB, 'API ',recipesAPI)
+    // console.log(recipesDB, recipesAPI)
+    
+    let nextId = [...recipesDB.map(r => r.id), ...recipesAPI.map(r => r.id)].sort().pop() + 1
 
+    // //para solucionar los conflictos de ids, le pasamos el id a la creacion de la receta
+    // //en la DB. El id que le pasamos es el máximo + 1 de todos los ids que tengamos hasta ahora,
+    // //de esta manera si la DB empieza vacía y traemos todo lo que necesitamos de la API al 
+    //principionos aseguramos de que cada recipe tenga un id único
+    console.log('creando recipe', nextId)
     let recipe = await Recipe.create({
         ...req.body.values, id: nextId
     });
-    for (const i of req.body.dietidsPayload) {
+    let relaciones = await RecipeDiet.findAll()
+    // console.log('relaciones sin cambiar', relaciones)
+
+    console.log('payload de ids de dietas', req.body.dietidsPayload)
+    for (let i of req.body.dietidsPayload) {
         let diet = await DietType.findByPk(i)
-        recipe.addDietType(diet)
+        // console.log(diet)
+        await recipe.addDietType(diet)
     }
+    let relacionesmutadas = await RecipeDiet.findAll()
+    // console.log('relaciones cambiadas', relacionesmutadas)
+    
 
     res.send({})
 })
