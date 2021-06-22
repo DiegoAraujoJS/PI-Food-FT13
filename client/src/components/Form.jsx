@@ -1,8 +1,8 @@
-import React, {useState} from 'react'
-import {Link} from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import App from '../App.js'
 import axios from "axios";
-import {diets} from '../utils'
+import { diets } from '../utils'
 export default function () {
 
     const [name, setName] = useState();
@@ -14,23 +14,26 @@ export default function () {
     const [button, setStateButton] = useState([])
     const [dietids, setDietId] = useState({})
 
-    let buttons = diets.map(diet => {const thisbtn = <button id={"form__button"+diet} style={{'background-color': 'beige'}} onClick={() => {
-        let thisBtn = document.getElementById ("form__button"+diet)
-        if (thisBtn.style['background-color'] === 'green') {
-            thisBtn.style['background-color'] = 'beige'
-        } else {
-            thisBtn.style['background-color'] = 'green'
-        }
-        
-        dietids[diet] = !dietids[diet]
-        }}>{diet}</button>; return thisbtn} )
+    let buttons = diets.map(diet => {
+        const thisbtn = <button id={"form__button" + diet} style={{ 'background-color': 'beige' }} type="button" onClick={() => {
+            let thisBtn = document.getElementById("form__button" + diet)
+            if (thisBtn.style['background-color'] === 'green') {
+                thisBtn.style['background-color'] = 'beige'
+            } else {
+                thisBtn.style['background-color'] = 'green'
+            }
+
+            dietids[diet] = !dietids[diet]
+        }}>{diet}</button>; return thisbtn
+    })
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        let dietidsPayload = Object.keys(dietids).filter(x => dietids[x]===true).map(key => diets.indexOf(key))
-        console.log(name, extract, score, healthScore, steps, dietidsPayload )
+        let dietidsPayload = Object.keys(dietids).filter(x => dietids[x] === true).map(key => diets.indexOf(key))
+        
+        console.log(name, extract, score, healthScore, steps, dietidsPayload)
         const response = await axios.post('http://localhost:3001/recipe', {
-            values: {name, extract, score, healthScore, steps, image: "https://spoonacular.com/recipeImages/715594-312x231.jpg"}, dietidsPayload
+            values: { name, extract, score, healthScore, steps, image: "https://spoonacular.com/recipeImages/715594-312x231.jpg" }, dietidsPayload
         })
         console.log(response)
     }
@@ -65,17 +68,20 @@ export default function () {
                 <div>
                     <span>Diet</span>
                     {buttons}
-                    
-                    
+
+
                 </div>
                 <div>
                     <span>Paso a paso:</span>
-                    <input type="text" value={step} onChange={e => setStep(e.target.value)}/>
-                    <button onClick={e => {
+                    <input type="text" value={step} onChange={e => setStep(e.target.value)} />
+                    <button type="button" onClick={e => {
+                        if (step.match(/^\s*$/)) return;
                         setStep("");
                         setSteps([...steps, step])
                     }}>agregar paso
                     </button>
+                </div>
+                <div>
                     <ul>
                         {steps.map((step, i) => <li key={i}>{step}</li>)}
                     </ul>

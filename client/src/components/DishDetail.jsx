@@ -30,6 +30,7 @@ function DishDetail(props) {
 
         </div>
     )} else if (props.analyzedInstructions[1].length !== 0){
+        console.log(props)
         
         return (
             <div className="dish-detail__div">
