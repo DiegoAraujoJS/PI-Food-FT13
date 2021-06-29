@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const routes = require('./routes/index.js');
 const axios = require('axios');
-
+const uuid = require('uuid')
 const {Op} = require('sequelize')
 const storage = require('node-persist');
 const {Recipe, DietType, RecipeDiet} = require('./db.js');
@@ -12,6 +12,7 @@ const db = require('./db.js');
 const getSpoonacularRecipes = require('./spoonacular.js')
 const objectifyRecipe = require('./objectifyRecipe.js');
 // init cache
+
 storage.init();
 
 const server = express();
@@ -44,11 +45,11 @@ server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 
 let apiRequests = 0;
 
-
+const howManyRecipes = 100
 
 server.get('/recipes', async (req, res) => {
 
-    const howManyRecipesRequest = req.query.howManyRecipesRequest || 50;
+    const howManyRecipesRequest = req.query.howManyRecipesRequest || howManyRecipes;
     const recipesInfo = req.query.addRecipeInformation === 'true' ? '&addRecipeInformation=true' : '';
 
     let cachedResponse = await getSpoonacularRecipes(howManyRecipesRequest, recipesInfo, res)
@@ -60,6 +61,8 @@ server.get('/recipes', async (req, res) => {
     dbRecipesWithDiets = await objectifyRecipe(dbRecipes)
     
     let response = [...cachedResponse, ...dbRecipesWithDiets]
+
+    console.log()
 
     if (req.query.name) response = response.filter(recipe => recipe.title.includes(req.query.name))
 
@@ -97,7 +100,7 @@ server.post('/recipes', async (req, res) => {
 
     //calcular next id
     const recipesDB = await Recipe.findAll()
-    const recipesAPI = await getSpoonacularRecipes(100, '', res)
+    const recipesAPI = await getSpoonacularRecipes(howManyRecipes, '', res)
 
     // console.log('DB ',recipesDB, 'API ',recipesAPI)
     // console.log(recipesDB, recipesAPI)

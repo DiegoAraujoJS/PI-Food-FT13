@@ -26,6 +26,8 @@ ReactDOM.render(
     <Route path='/app' component={App}/>
     <Route path='/form' component={Form} />
     <Route exact path ='/' component={Home} />
+
+    
   </React.StrictMode>
   </BrowserRouter>
   </Provider>,

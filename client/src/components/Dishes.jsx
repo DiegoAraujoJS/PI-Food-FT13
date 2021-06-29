@@ -5,6 +5,7 @@ import axios from 'axios'
 import {connect} from 'react-redux'
 import DishDetail from './DishDetail.jsx'
 import {diets} from '../utils'
+
 function myReduce (array) {
     if (array.length !== 0) {
         return array.reduce((acum, dietName) => acum+', '+dietName)

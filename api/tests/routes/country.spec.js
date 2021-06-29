@@ -21,12 +21,12 @@ describe('POST /recipes', () => {
     extract:'frita',
     score:4,
     healthScore:2,
-    steps:'.', 
+    steps:['a', 'b'], 
     image: "https://spoonacular.com/recipeImages/715594-312x231.jpg" }, dietidsPayload:[1,4]})
 
   })
   it("shoud respond with a 200 status", async () => {
-    console.log(response)
+    // console.log(response)
     expect(response.status).equal(200)
   })
 })
@@ -43,7 +43,7 @@ describe('GET /recipes',  () => {
   })
   it ("should save 10 elements on an array", async() => {
     
-    console.log(response.data.results)
+    // console.log(response.data.results)
     expect(response.data.results.length).equal(11) //las 10 que pide mas la milanesa
     
   })

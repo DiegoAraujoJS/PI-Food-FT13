@@ -11,10 +11,11 @@ export default function (state = {
         ORDER_AZ: {...state, orderAZ: !state['orderAZ']},
         ORDER_BY_RANKING: {...state, orderRanking: !state['orderRanking']},
     }
-    diets.forEach(diet => {
-        cases[diet] = {...state}
-        cases[diet][diet] = !state[diet]
-    })
-
+    if (diets.includes(action['type'])){
+        let ret = {...state}
+        ret[action['type']] = !state[action['type']]
+        return ret;
+    }
+    
     return cases[action['type']] || state
 }
