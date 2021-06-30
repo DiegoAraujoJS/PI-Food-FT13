@@ -1,6 +1,6 @@
-.home {
-    height: 1000px;
-    width: 1000px;
+html, body, .home {
+    height: 100%;
+    width: 100%;
     background-image: url('https://images.unsplash.com/photo-1597113366853-fea190b6cd82?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8d29vZHxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&w=1000&q=80');
     
 }

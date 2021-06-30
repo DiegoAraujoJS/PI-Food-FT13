@@ -12,7 +12,6 @@ function myReduce (array) {
     } else {
         return ''
     }
-    
 }
 
 function Dishes (props) {
